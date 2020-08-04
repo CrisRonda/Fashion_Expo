@@ -1,3 +1,4 @@
 import LoadAssets from "./LoadAssets";
 import Button from "./Button";
-export { LoadAssets, Button };
+import { Text, Box } from "./theme";
+export { LoadAssets, Button, Text, Box };

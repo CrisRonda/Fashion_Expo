@@ -1,11 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Button } from "../../../components/";
+import { View, StyleSheet } from "react-native";
+import { Button, Text } from "../../../components/";
 export default ({ subtitle, description, x, last, onPress }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.subtitle}>{subtitle}</Text>
-      <Text style={styles.description}>{description}</Text>
+      <Text variant="title2">{subtitle}</Text>
+      <Text textAlign="center" marginBottom="m" variant="text">
+        {description}
+      </Text>
       <Button
         {...{ onPress }}
         label={last ? "¡Empecemos!" : "Siguiente"}
@@ -20,20 +22,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
-  },
-  subtitle: {
-    fontFamily: "regular",
-    fontSize: 24,
-    marginBottom: 12,
-    color: "#0c0d34",
-    textAlign: "center",
-  },
-  description: {
-    fontFamily: "regular",
-    fontSize: 16,
-    lineHeight: 24,
-    marginBottom: 40,
-    color: "#0c0d34",
-    textAlign: "center",
   },
 });

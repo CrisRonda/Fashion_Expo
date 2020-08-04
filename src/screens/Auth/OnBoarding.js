@@ -1,19 +1,22 @@
 import React, { useRef } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import Slide from "./components/Slide";
-import {
-  width,
-  SLIDE_HEIGHT,
-  BORDER_RADIUS_ONBOARDING,
-} from "../../../assets/Dimensions";
+import { width, SLIDE_HEIGHT } from "../../../assets/Dimensions";
 import {
   onScrollEvent,
   interpolateColor,
   useScrollHandler,
 } from "react-native-redash";
-import Animated, { multiply, divide } from "react-native-reanimated";
+import Animated, {
+  multiply,
+  divide,
+  interpolate,
+  Extrapolate,
+} from "react-native-reanimated";
 import SubSlide from "./components/SubSlide";
 import Dot from "./components/Dot";
+import theme from "../../components/theme";
+import { useNavigation } from "@react-navigation/native";
 
 const slides = [
   {
@@ -33,7 +36,7 @@ const slides = [
   {
     title: "Excéntrico",
     subtitle: "Diseños actuales",
-    description: "Modelos para mujeres, hombres, niñas y niños",
+    description: "Modelos para toda la familia",
     color: "#ffe4d9",
     picture: require("../../../assets/img/1.png"),
   },
@@ -47,22 +50,41 @@ const slides = [
 ];
 export default (props) => {
   const scroll = useRef(null);
+  const { navigate } = useNavigation();
   const { scrollHandler, x } = useScrollHandler();
   const onScroll = onScrollEvent({ x });
   const backgroundColor = interpolateColor(x, {
     inputRange: slides.map((_, index) => index * width),
     outputRange: slides.map(({ color }) => color),
   });
-  const handlePressButtons = (index) => {
-    if (scroll) {
+  const handlePressButtons = (index, last) => {
+    if (last) {
+      navigate("Welcome");
+    } else {
       scroll.current
-        .getNode()
+        ?.getNode()
         .scrollTo({ x: width * (index + 1), animated: true });
     }
   };
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.slider, { backgroundColor }]}>
+        {slides.map(({ picture }, index) => {
+          const opacity = interpolate(x, {
+            inputRange: [
+              (index - 1) * width,
+              index * width,
+              (index + 1) * width,
+            ],
+            outputRange: [0, 1, 0],
+            extrapolate: Extrapolate.CLAMP,
+          });
+          return (
+            <Animated.View key={index} style={[styles.underlay, { opacity }]}>
+              <Image source={picture} style={styles.picture} />
+            </Animated.View>
+          );
+        })}
         <Animated.ScrollView
           ref={scroll}
           horizontal
@@ -96,14 +118,16 @@ export default (props) => {
             { transform: [{ translateX: multiply(x, -1) }] },
           ]}
         >
-          {slides.map(({ subtitle, description }, index) => (
-            <SubSlide
-              onPress={() => handlePressButtons(index)}
-              key={index}
-              last={index === slides.length - 1}
-              {...{ subtitle, description, x }}
-            />
-          ))}
+          {slides.map(({ subtitle, description }, index) => {
+            const last = index === slides.length - 1;
+            return (
+              <SubSlide
+                onPress={() => handlePressButtons(index, last)}
+                key={index}
+                {...{ subtitle, description, last }}
+              />
+            );
+          })}
         </Animated.View>
       </View>
     </View>
@@ -117,7 +141,7 @@ const styles = StyleSheet.create({
   },
   slider: {
     height: SLIDE_HEIGHT,
-    borderBottomRightRadius: BORDER_RADIUS_ONBOARDING,
+    borderBottomRightRadius: theme.borderRadii.xl,
     overflow: "hidden",
   },
   footer: {
@@ -127,14 +151,26 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     backgroundColor: "white",
-    borderTopLeftRadius: BORDER_RADIUS_ONBOARDING,
+    borderTopLeftRadius: theme.borderRadii.xl,
   },
   pagination: {
     flexDirection: "row",
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    height: BORDER_RADIUS_ONBOARDING,
+    height: theme.borderRadii.xl,
     zIndex: 1,
+  },
+  underlay: {
+    position: "absolute",
+    justifyContent: "flex-end",
+    width: "100%",
+    height: "100%",
+    zIndex: -999,
+  },
+  picture: {
+    ...StyleSheet.absoluteFillObject,
+    width: undefined,
+    height: undefined,
   },
 });
