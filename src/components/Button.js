@@ -1,8 +1,9 @@
 import React from "react";
 import { RectButton } from "react-native-gesture-handler";
 import { Text, StyleSheet } from "react-native";
-import theme from "./theme";
-export default ({ label, variant = "default", onPress }) => {
+import { useTheme } from "@shopify/restyle";
+export default ({ label, variant = "default", onPress, children }) => {
+  const theme = useTheme();
   const backgroundColor =
     variant === "primary"
       ? theme.colors.primary
@@ -15,7 +16,11 @@ export default ({ label, variant = "default", onPress }) => {
       style={[styles.container, { backgroundColor }]}
       onPress={onPress}
     >
-      <Text style={[styles.label, { color }]}>{label}</Text>
+      {children ? (
+        children
+      ) : (
+        <Text style={[styles.label, { color }]}>{label}</Text>
+      )}
     </RectButton>
   );
 };

@@ -3,7 +3,14 @@ import {
   createStackNavigator,
   TransitionPresets,
 } from "@react-navigation/stack";
-import { OnBoarding, Welcome } from "../screens";
+import {
+  OnBoarding,
+  Welcome,
+  Login,
+  SignUp,
+  ForgotPassword,
+  PasswordChanged,
+} from "../screens";
 const Stack = createStackNavigator();
 
 export default (props) => {
@@ -12,14 +19,19 @@ export default (props) => {
       headerMode="none"
       screenOptions={{
         animationEnabled: true,
-        ...TransitionPresets.SlideFromRightIOS,
+        ...TransitionPresets.ModalSlideFromBottomIOS,
         gestureEnabled: true,
         gestureEnabled: true,
         cardShadowEnabled: false,
       }}
+      initialRouteName="OnBoarding"
     >
       <Stack.Screen name="OnBoarding" component={OnBoarding} />
       <Stack.Screen name="Welcome" component={Welcome} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="SignUp" component={SignUp} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="PasswordChanged" component={PasswordChanged} />
     </Stack.Navigator>
   );
 };
